@@ -36,7 +36,7 @@ trans( b(X,Y), b(Z,0) ) :-
     Z is X + Y, Z =< 4.
 
 
-%% Dfs starting from a root
+% DFS
 solve_dfs(Solution) :-
     initial_state(InitialState),
     final_state(FinalState),
@@ -48,3 +48,22 @@ dfs(Path, Node, FinalState, Solution) :-
     trans(Node, Node1),
     \+member(Node1, Path),
     dfs([Node|Path], Node1, FinalState, Solution).
+
+
+% BFS
+solve_bfs(Solution) :-
+    initial_state(InitialState),
+    final_state(FinalState),
+    bfs([[InitialState]], FinalState, Solution). 
+
+bfs([[FinalState|Visited]|_], FinalState, Solution) :-
+    reverse([FinalState|Visited], Solution).
+
+bfs([N|Rest], FinalState, Solution) :-
+    findall(SonExtension, extends_till_son(N, SonExtension), Extensions),
+    append(Rest, Extensions, NewRest),
+    bfs(NewRest, FinalState, Solution).
+
+extends_till_son([N|Trajectory], [N1,N|Trajectory]):-
+    trans(N, N1),
+    \+member(N1, Trajectory).
