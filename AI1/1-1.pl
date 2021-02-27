@@ -67,3 +67,19 @@ bfs([N|Rest], FinalState, Solution) :-
 extends_till_son([N|Trajectory], [N1,N|Trajectory]):-
     trans(N, N1),
     \+member(N1, Trajectory).
+
+
+% Iterative deepening
+solve_iterative(Solution) :- 
+    initial_state(InitialState),
+    final_state(FinalState),
+    iterative(InitialState, FinalState, InvertedSolution),
+    reverse(InvertedSolution, Solution).
+
+
+iterative(FinalState, FinalState, [FinalState]).
+
+iterative(FirstNode, LastNode, [LastNode|Path]) :- 
+    iterative(FirstNode, OneButLast, Path),
+    trans(OneButLast, LastNode),
+    \+member(LastNode, Path).
