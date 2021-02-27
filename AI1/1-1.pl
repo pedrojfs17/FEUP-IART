@@ -1,6 +1,7 @@
-:- use_module(library(lists)).
+:- include('search-methods.pl'). 
 
 initial_state( b(0,0) ).
+
 final_state( b(2,0) ).
 
 % Fill first bucket
@@ -36,50 +37,20 @@ trans( b(X,Y), b(Z,0) ) :-
     Z is X + Y, Z =< 4.
 
 
-% DFS
-solve_dfs(Solution) :-
+
+bucket_dfs(Solution) :-
     initial_state(InitialState),
     final_state(FinalState),
-    dfs([], InitialState, FinalState, InvertedSolution),
-    reverse(InvertedSolution, Solution). 
-
-dfs(Path, FinalState, FinalState, [FinalState|Path]).
-dfs(Path, Node, FinalState, Solution) :-
-    trans(Node, Node1),
-    \+member(Node1, Path),
-    dfs([Node|Path], Node1, FinalState, Solution).
+    solve_dfs(InitialState, FinalState, Solution).
 
 
-% BFS
-solve_bfs(Solution) :-
+bucket_bfs(Solution) :-
     initial_state(InitialState),
     final_state(FinalState),
-    bfs([[InitialState]], FinalState, Solution). 
-
-bfs([[FinalState|Visited]|_], FinalState, Solution) :-
-    reverse([FinalState|Visited], Solution).
-
-bfs([N|Rest], FinalState, Solution) :-
-    findall(SonExtension, extends_till_son(N, SonExtension), Extensions),
-    append(Rest, Extensions, NewRest),
-    bfs(NewRest, FinalState, Solution).
-
-extends_till_son([N|Trajectory], [N1,N|Trajectory]):-
-    trans(N, N1),
-    \+member(N1, Trajectory).
+    solve_bfs(InitialState, FinalState, Solution).
 
 
-% Iterative deepening
-solve_iterative(Solution) :- 
+bucket_iterative(Solution) :-
     initial_state(InitialState),
     final_state(FinalState),
-    iterative(InitialState, FinalState, InvertedSolution),
-    reverse(InvertedSolution, Solution).
-
-
-iterative(FinalState, FinalState, [FinalState]).
-
-iterative(FirstNode, LastNode, [LastNode|Path]) :- 
-    iterative(FirstNode, OneButLast, Path),
-    trans(OneButLast, LastNode),
-    \+member(LastNode, Path).
+    solve_iterative(InitialState, FinalState, Solution).
